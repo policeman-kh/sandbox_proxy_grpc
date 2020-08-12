@@ -1,0 +1,69 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.2.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+	id 'com.google.protobuf' version '0.8.12'
+	id 'application'
+}
+
+group = 'sandbox'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+protobuf {
+	protoc {
+		artifact = 'com.google.protobuf:protoc:3.12.0'
+	}
+	plugins {
+		grpc {
+			artifact = 'io.grpc:protoc-gen-grpc-java:1.31.0'
+		}
+		reactorGrpc {
+			artifact = 'com.salesforce.servicelibs:reactor-grpc:1.0.1'
+		}
+	}
+	generateProtoTasks {
+		ofSourceSet('main')*.plugins {
+			grpc {}
+			reactorGrpc {}
+		}
+	}
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs 'build/generated/source/proto/main/grpc'
+			srcDirs 'build/generated/source/proto/main/java'
+			srcDirs 'build/generated/source/proto/main/reactorGrpc'
+		}
+	}
+}
+
+dependencyManagement {
+	imports {
+		mavenBom 'io.micrometer:micrometer-bom:1.5.3'
+		mavenBom 'io.netty:netty-bom:4.1.51.Final'
+		mavenBom 'com.linecorp.armeria:armeria-bom:0.99.9'
+		mavenBom 'org.junit:junit-bom:5.6.2'
+	}
+}
+
+dependencies {
+	implementation 'com.linecorp.armeria:armeria'
+	implementation 'com.linecorp.armeria:armeria-grpc'
+	implementation 'com.linecorp.armeria:armeria-spring-boot2-webflux-starter'
+	implementation 'com.salesforce.servicelibs:reactor-grpc-stub:1.0.1'
+}
+
+application {
+	mainClassName = 'sandbox.armeria_grpc.ArmeriaGrpcApplication'
+}
+
+test {
+	useJUnitPlatform()
+}

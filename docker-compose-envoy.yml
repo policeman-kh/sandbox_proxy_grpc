@@ -1,0 +1,12 @@
+version: "3"
+services:
+  app:
+    image: envoyproxy/envoy:v1.14-latest
+    container_name: "envoy_app"
+    ports:
+      - "8082:8082"
+      - "8881:8881"
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
+    extra_hosts:
+      - "local_dev:192.168.0.163"
